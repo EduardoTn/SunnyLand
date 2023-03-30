@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class PlayerMove : MonoBehaviour
     public AudioClip fxJump;
     public int vidas = 3;
     public Color hitColor;
+    public GameObject playerDie;
     void Start()
     {
 
@@ -75,15 +77,37 @@ public class PlayerMove : MonoBehaviour
         playerAnim.SetFloat(Animation, Validation);
     }
 
+    void reloadGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     void Hurt()
     {
         if (!invencibility)
         {
             invencibility = true;
             vidas--;
-            StartCoroutine("Dano");
             _control.BarraVida(vidas);
+            fxGame.PlayOneShot(_control.fxDie);
+            if (vidas < 1)
+            {
+                Die();
+            } else
+            {
+                StartCoroutine("Dano");
+            }
         }
+    }
+
+    void Die()
+    {
+        GameObject tempDie = Instantiate(playerDie, transform.position, Quaternion.identity);
+        Rigidbody2D rbDie = tempDie.GetComponent<Rigidbody2D>();
+        rbDie.AddForce(new Vector2(150f, 500f));
+        gameObject.SetActive(false);
+        Destroy(tempDie, 2.5f);
+        Invoke("reloadGame", 3f);
     }
 
     IEnumerator Dano()
@@ -132,6 +156,21 @@ public class PlayerMove : MonoBehaviour
         {
             case "Enemie":
                 Hurt();
+                break;
+            case "Plataforma":
+                this.transform.parent = collision.transform;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Plataforma":
+                this.transform.parent = null;
                 break;
             default:
                 break;

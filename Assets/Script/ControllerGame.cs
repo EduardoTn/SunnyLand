@@ -12,6 +12,7 @@ public class ControllerGame : MonoBehaviour
     public AudioClip fxCenoura;
     public GameObject explosion;
     public AudioClip fxDestroyEnemie;
+    public AudioClip fxDie;
     public Sprite[] lifes;
     public Image actualLife;
     public void Pontuacao(int qtdPontos)
