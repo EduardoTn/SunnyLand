@@ -6,7 +6,7 @@ public class PlatformControll : MonoBehaviour
 {
     // Start is called before the first frame update
     public Transform plataforma, ptA, ptB;
-    public float speed;
+    public float speed = 0.02f;
     public Vector3 pontoDestino;
     public GameObject player;
     void Start()

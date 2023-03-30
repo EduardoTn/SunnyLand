@@ -21,6 +21,7 @@ public class PlayerMove : MonoBehaviour
     public int vidas = 3;
     public Color hitColor;
     public GameObject playerDie;
+    public ParticleSystem _poeira; 
     void Start()
     {
 
@@ -62,9 +63,15 @@ public class PlayerMove : MonoBehaviour
         setFloatAnimation("eixoY", playerRig.velocity.y);
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
+            criarPoeira();
             playerRig.AddForce(new Vector2(0f, JumpForce), ForceMode2D.Impulse);
             fxGame.PlayOneShot(fxJump);
         }
+    }
+
+    void criarPoeira()
+    {
+        _poeira.Play();
     }
 
     void setBoolAnimation(string Animation, bool Validation)
@@ -89,12 +96,12 @@ public class PlayerMove : MonoBehaviour
             invencibility = true;
             vidas--;
             _control.BarraVida(vidas);
-            fxGame.PlayOneShot(_control.fxDie);
             if (vidas < 1)
             {
                 Die();
             } else
             {
+                fxGame.PlayOneShot(_control.fxDestroyEnemie);
                 StartCoroutine("Dano");
             }
         }
@@ -102,6 +109,7 @@ public class PlayerMove : MonoBehaviour
 
     void Die()
     {
+        fxGame.PlayOneShot(_control.fxDie);
         GameObject tempDie = Instantiate(playerDie, transform.position, Quaternion.identity);
         Rigidbody2D rbDie = tempDie.GetComponent<Rigidbody2D>();
         rbDie.AddForce(new Vector2(150f, 500f));
@@ -159,6 +167,9 @@ public class PlayerMove : MonoBehaviour
                 break;
             case "Plataforma":
                 this.transform.parent = collision.transform;
+                break;
+            case "spykes":
+                Die();
                 break;
             default:
                 break;
